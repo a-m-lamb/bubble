@@ -29,7 +29,7 @@ func main() {
 	}
 	wd.DeleteAllCookies()
 
-	if err := wd.Get("https://www.pinterest.com/"); err != nil {
+	if err := wd.Get("some website"); err != nil {
 		fmt.Printf("Could not log into site: %s", err)
 	}
 
@@ -50,7 +50,7 @@ func main() {
 func login(wd selenium.WebDriver) error {
 	wd.SetImplicitWaitTimeout(60000000000 * time.Nanosecond)
 
-	loginBtn, err := wd.FindElement(selenium.ByXPATH, "//*[@id=\"fullpage-wrapper\"]/div[1]/div/div/div[1]/div/div[2]/div[2]/button/div/div")
+	loginBtn, err := wd.FindElement(selenium.ByXPATH, "//location of login btn")
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func login(wd selenium.WebDriver) error {
 		return err
 	}
 
-	loginBtn, err = wd.FindElement(selenium.ByXPATH, "//*[@id=\"__PWS_ROOT__\"]/div/div[1]/div[2]/div/div/div/div/div/div[4]/form/div[7]/button")
+	loginBtn, err = wd.FindElement(selenium.ByXPATH, "//second login btn")
 
 	if err = loginBtn.Click(); err != nil {
 		return err
@@ -90,14 +90,12 @@ func login(wd selenium.WebDriver) error {
 func search(wd selenium.WebDriver) error {
 	wd.SetImplicitWaitTimeout(60000000000)
 
-	searchBar, err := wd.FindElement(selenium.ByXPATH, "//*[@id=\"searchBoxContainer\"]/div/div/div[2]/input")
+	searchBar, err := wd.FindElement(selenium.ByXPATH, "//searchBar")
 	if err != nil {
 		return err
 	}
 
-	searchBar.SendKeys("cookies\n")
-
-	fmt.Printf("We were able to search")
+	searchBar.SendKeys("whatever you want to search\n")
 	return err
 }
 
@@ -112,14 +110,14 @@ func getPosts(wd selenium.WebDriver) error {
 		go func(i int) {
 			defer wg.Done()
 
-			xpath := fmt.Sprintf("//*[@id=\"__PWS_ROOT__\"]/div[1]/div/div[2]/div/div/div[4]/div/div[1]/div/div/div/div[1]/div[%d]/div/div/div/div/div/div/div[1]/a/div/div[1]/div/div/div/div/div/img", div)
-			ad := fmt.Sprintf("//*[@id=\"__PWS_ROOT__\"]/div[1]/div/div[2]/div/div/div[4]/div/div[1]/div/div/div/div[1]/div[%d]/div/div/div/div/div/div[1]/div[1]/div/div/a/div/div[1]/div/div[2]/div[1]/div/div/img", div)
+			xpath := fmt.Sprintf("//post", div)
+			ad := fmt.Sprintf("//ad", div)
 			_, err := wd.FindElement(selenium.ByXPATH, xpath)
 
 			for err != nil {
 				div++
-				xpath := fmt.Sprintf("//*[@id=\"__PWS_ROOT__\"]/div[1]/div/div[2]/div/div/div[4]/div/div[1]/div/div/div/div[1]/div[%d]/div/div/div/div/div/div/div[1]/a/div/div[1]/div/div/div/div/div/img", div)
-				err = scrollForElement(wd, xpath, "//*[@id=\"__PWS_ROOT__\"]")
+				xpath := fmt.Sprintf("//post", div)
+				err = scrollForElement(wd, xpath, "//page")
 				if err != nil {
 					return
 				}
@@ -139,7 +137,7 @@ func getPosts(wd selenium.WebDriver) error {
 					div++
 				}
 
-				post, err := wd.FindElement(selenium.ByXPATH, fmt.Sprintf("//*[@id=\"__PWS_ROOT__\"]/div[1]/div/div[2]/div/div/div[4]/div/div[1]/div/div/div/div[1]/div[%d]/div/div/div/div/div/div/div[1]/a/div/div[1]/div/div/div/div/div/img", div))
+				post, err := wd.FindElement(selenium.ByXPATH, fmt.Sprintf("//post", div))
 
 				post.Click()
 				err = savePost(wd, err)
@@ -193,9 +191,9 @@ func scrollForElement(wd selenium.WebDriver, parentXpath string, xpath string) e
 }
 
 func savePost(wd selenium.WebDriver, err error) error {
-	saveButton := "//*[@id=\"gradient\"]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div[2]/div[1]/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/button/div/div"
+	saveButton := "//savebtn"
 
-	err = scrollForElement(wd, saveButton, "//*[@id=\"gradient\"]/div/div/div[2]/div/div/div")
+	err = scrollForElement(wd, saveButton, "//page")
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
